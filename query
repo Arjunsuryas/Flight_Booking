@@ -1,0 +1,73 @@
+/*
+  # Flight Booking App Schema
+
+  ## Overview
+  Complete database schema for a flight ticket booking application with user authentication,
+  flight management, and booking system.
+
+  ## New Tables
+
+  ### `flights`
+  - `id` (uuid, primary key) - Unique flight identifier
+  - `flight_number` (text) - Flight number (e.g., "AA123")
+  - `airline` (text) - Airline name
+  - `origin` (text) - Departure airport code
+  - `destination` (text) - Arrival airport code
+  - `departure_time` (timestamptz) - Scheduled departure time
+  - `arrival_time` (timestamptz) - Scheduled arrival time
+  - `price` (numeric) - Ticket price
+  - `available_seats` (integer) - Number of available seats
+  - `total_seats` (integer) - Total capacity
+  - `aircraft_type` (text) - Aircraft model
+  - `created_at` (timestamptz) - Record creation timestamp
+
+  ### `bookings`
+  - `id` (uuid, primary key) - Unique booking identifier
+  - `user_id` (uuid, foreign key) - References auth.users
+  - `flight_id` (uuid, foreign key) - References flights table
+  - `passenger_name` (text) - Passenger full name
+  - `passenger_email` (text) - Passenger email
+  - `passenger_phone` (text) - Passenger phone number
+  - `seat_number` (text) - Assigned seat number
+  - `booking_reference` (text) - Unique booking reference code
+  - `status` (text) - Booking status (confirmed, cancelled, completed)
+  - `total_price` (numeric) - Total booking price
+  - `created_at` (timestamptz) - Booking creation timestamp
+
+  ### `profiles`
+  - `id` (uuid, primary key) - References auth.users
+  - `email` (text) - User email
+  - `full_name` (text) - User full name
+  - `phone` (text) - User phone number
+  - `created_at` (timestamptz) - Profile creation timestamp
+  - `updated_at` (timestamptz) - Last update timestamp
+
+  ## Security
+  - Row Level Security (RLS) enabled on all tables
+  - Users can only read flights
+  - Users can manage their own bookings
+  - Users can manage their own profile
+
+  ## Policies
+  1. Flights - Public read access for authenticated users
+  2. Bookings - Users can create, read, update, delete their own bookings
+  3. Profiles - Users can read and update their own profile
+*/
+
+-- Create flights table
+CREATE TABLE IF NOT EXISTS flights (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  flight_number text NOT NULL,
+  airline text NOT NULL,
+  origin text NOT NULL,
+  destination text NOT NULL,
+  departure_time timestamptz NOT NULL,
+  arrival_time timestamptz NOT NULL,
+  price numeric NOT NULL,
+  available_seats integer NOT NULL DEFAULT 0,
+  total_seats integer NOT NULL DEFAULT 0,
+  aircraft_type text NOT NULL,
+  created_at timestamptz DEFAULT now()
+);
+
+$$ LANGUAGE plpgsql;
